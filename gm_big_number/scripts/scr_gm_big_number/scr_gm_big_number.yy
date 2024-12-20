@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"scr_gm_big_number",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_gm_big_number",
+  "parent":{
+    "name":"GM_BIG_NUMBER",
+    "path":"folders/GM_BIG_NUMBER.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
