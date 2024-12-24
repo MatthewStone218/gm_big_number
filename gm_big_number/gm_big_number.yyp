@@ -36,6 +36,7 @@
   },
   "name":"gm_big_number",
   "resources":[
+    {"id":{"name":"obj_test","path":"objects/obj_test/obj_test.yy",},},
     {"id":{"name":"rm_big_number","path":"rooms/rm_big_number/rm_big_number.yy",},},
     {"id":{"name":"scr_gm_big_number","path":"scripts/scr_gm_big_number/scr_gm_big_number.yy",},},
   ],

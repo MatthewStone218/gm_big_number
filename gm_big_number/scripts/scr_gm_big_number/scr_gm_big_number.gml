@@ -19,13 +19,20 @@ function __number_class_element__(num) constructor{
 		self.num_sign = sign(num);
 		self.num = [_num_fract, abs(num)];
 	} else {
-		show_error("defining number with string is not yet implemented!")
+		show_error("defining number with string is not yet implemented!",1);
 	}
 }
 
-function number_add(a,b){
+function number_string(numb){
+	var _str = "";
+	for(var i = 0; i < array_length(numb); i++){
+		
+	}
+}
+
+function number_sum(a,b){
 	if(a.sign != -1 && b.sign != -1){
-		return __number_add__(a,b);
+		return __number_sum__(a,b);
 	} else if(a.sign == -1 xor b.sign == -1){
 		var _abs_cmp = number_cmp(number_abs(a),number_abs(b));
 		if(_abs_cmp == -1){
@@ -35,8 +42,18 @@ function number_add(a,b){
 		}
 		return __number_sub__(a,b);
 	} else {
-		return __number_add__(a,b);
+		return __number_sum__(a,b);
 	}
+}
+
+function number_div(a,b){
+	if(array_length(b.num) == 2 && b.num[1] == 0){
+		show_error("big number: can't divide with 0",1);
+	}
+	if(array_length(a.num) == 2 && b.num[1] == 0){
+		return number(0);
+	}
+	return __number_div__(a,b);
 }
 
 function number_cmp(a,b){
@@ -71,17 +88,22 @@ function number_abs(numb){
 	return _new_numb;
 }
 
-function __number_add__(numb1,numb2){
+function __number_div__(numb1,numb2){
+	var _new_numb = number(0);
+	_new_numb.num_sign = numb1.num_sign*numb2.num_sign;
+}
+
+function __number_sum__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = numb1.num_sign;
 
 	var _base_num = variable_clone(numb1.num);
-	var _add_num = variable_clone(numb2.num);
+	var _sum_num = variable_clone(numb2.num);
 	
-	for(var i = array_length(_add_num); i < array_length(_base_num); i++){
-		_add_num[i] = 0;
+	for(var i = array_length(_sum_num); i < array_length(_base_num); i++){
+		_sum_num[i] = 0;
 	}
-	for(var i = array_length(_base_num); i < array_length(_add_num); i++){
+	for(var i = array_length(_base_num); i < array_length(_sum_num); i++){
 		_base_num[i] = 0;
 	}
 	
@@ -89,19 +111,19 @@ function __number_add__(numb1,numb2){
 	for(var i = 0; i < array_length(_base_num); i++){
 		var _temp_over;
 		var _overed2 = false;
-		while(_add_num[i] != 0){
-			_temp_over = _base_num[i] & _add_num[i];
-			_base_num[i] = _base_num[i] xor _add_num[i];
-			_add_num[i] = _temp_over << 1;
+		while(_sum_num[i] != 0){
+			_temp_over = _base_num[i] & _sum_num[i];
+			_base_num[i] = _base_num[i] xor _sum_num[i];
+			_sum_num[i] = _temp_over << 1;
 			
 			_overed2 = _overed2 || _temp_over >> 63;
 		}
 		if(_overed){
-			_add_num[i] = 1;
-			while(_add_num[i] != 0){
-				_temp_over = _base_num[i] & _add_num[i];
-				_base_num[i] = _base_num[i] xor _add_num[i];
-				_add_num[i] = _temp_over << 1;
+			_sum_num[i] = 1;
+			while(_sum_num[i] != 0){
+				_temp_over = _base_num[i] & _sum_num[i];
+				_base_num[i] = _base_num[i] xor _sum_num[i];
+				_sum_num[i] = _temp_over << 1;
 			
 				_overed2 = _overed2 || _temp_over >> 63;
 			}
@@ -109,7 +131,7 @@ function __number_add__(numb1,numb2){
 		_overed = _overed2;
 		if(_overed2 && array_length(_base_num)-1 < i+1){
 			_base_num[i+1] = 0;
-			_add_num[i+1] = 0;
+			_sum_num[i+1] = 0;
 		}
 	}
 	
