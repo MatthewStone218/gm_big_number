@@ -101,20 +101,22 @@ function __number_multiply__(numb1,numb2){
 	_new_numb.num_sign = numb1.num_sign*numb2.num_sign;
 	
 	for(var i = 0; i < array_length(numb2.num); i++){
-		for(var ii = 0; ii < 63; ii++){
-			if(numb2.num & (int64(1) << ii) != 0){
-				var _shift = 63*i+ii-63;
-				var _temp_num = number(0);
-				_temp_num.num_sign = 1;
-				if(_shift > 0){
-					for(var iii = 0; iii < _shift div 63; iii++){
-						_temp_num.num[iii] = 0;
+		for(var ii = 0; ii < array_length(numb1.num); ii++){
+			for(var iii = 0; iii < 63; iii++){
+				if(numb2.num & (int64(1) << iii) != 0){
+					var _shift = 63*i+iii-63;
+					var _temp_num = number(0);
+					_temp_num.num_sign = 1;
+					if(_shift > 0){
+						for(var iiii = 0; iiii < _shift div 63; iiii++){
+							_temp_num.num[iiii] = 0;
+						}
+						_temp_num.num[_shift div 63] = numb1.num[ii] << (_shift mod 63);
+						_temp_num.num[(_shift div 63)+1] = numb1.num[ii] >> (63-(_shift mod 63));
 					}
-					_temp_num[_shift div 63] = numb1.num << _shift mod 63;
-					_temp_num[(_shift div 63)+1] = numb1.num >> (63-(_shift mod 63));
-				}
 				
-				_new_numb = __number_sum__(_new_numb,_temp_num);
+					_new_numb = __number_sum__(_new_numb,_temp_num);
+				}
 			}
 		}
 	}
@@ -148,10 +150,7 @@ function __number_reciprocal__(numb){
 		_numb_result = __number_multiply__(_numb_result,(__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result))));
 	}
 	
-	_new_numb.num = [];
-	for(var i = 0; i < array_length(_numb_result.num); i++){
-		_new_numb.num[i] = _numb_result.num[i];
-	}
+	_new_numb.num = variable_clone(_numb_result);
 	
 	return _new_numb;
 }
@@ -198,7 +197,7 @@ function __number_sum__(numb1,numb2){
 		}
 	}
 	
-	_new_numb.num = _base_num.num;
+	_new_numb.num = variable_clone(_base_num.num);
 	return _new_numb;
 }
 
@@ -242,6 +241,6 @@ function __number_sub__(numb1,numb2){
 			array_delete(_base_num,i,1);
 		}
 	}
-	_new_numb.num = _base_num.num;
+	_new_numb.num = variable_clone(_base_num.num);
 	return _new_numb;
 }
