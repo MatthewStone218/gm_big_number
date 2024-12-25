@@ -196,8 +196,7 @@ function __number_sum__(numb1,numb2){
 			_sum_num[i+1] = 0;
 		}
 	}
-	
-	_new_numb.num = variable_clone(_base_num.num);
+	_new_numb.num = variable_clone(_base_num);
 	return _new_numb;
 }
 
@@ -241,6 +240,6 @@ function __number_sub__(numb1,numb2){
 			array_delete(_base_num,i,1);
 		}
 	}
-	_new_numb.num = variable_clone(_base_num.num);
+	_new_numb.num = variable_clone(_base_num);
 	return _new_numb;
 }
