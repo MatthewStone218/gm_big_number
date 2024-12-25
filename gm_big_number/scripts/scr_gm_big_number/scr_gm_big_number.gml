@@ -137,7 +137,7 @@ function __number_reciprocal__(numb){
 	var _n2 = number(2);
 	
 	for(var i = 0; i < 7; i++){
-		_numb_result = __number_multiply__(_numb_result,(__number_sub__(_n2-__number_multiply__(_numb_original,_numb_result))));
+		_numb_result = __number_multiply__(_numb_result,(__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result))));
 	}
 	
 	_new_numb.num = [];
@@ -194,7 +194,7 @@ function __number_sum__(numb1,numb2){
 	return _new_numb;
 }
 
-function __number_sum__(numb1,numb2){
+function __number_sub__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = numb1.num_sign;
 	
