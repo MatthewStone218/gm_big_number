@@ -168,13 +168,13 @@ function __number_sum__(numb1,numb2){
 		var _overed2 = false;
 		while(_sum_num[i] != 0){
 			_temp_over = _base_num[i] & _sum_num[i];
-			_base_num[i] = _base_num[i] xor _sum_num[i];
+			_base_num[i] = _base_num[i] ^ _sum_num[i];
 			_sum_num[i] = _temp_over << 1;
 			
 			_overed2 = _overed2 || (_temp_over & (int64(1) << 62) != 0);
 		}
 		if(_overed){
-			_sum_num[i] = 1;
+			_sum_num[i] = int64(1);
 			while(_sum_num[i] != 0){
 				_temp_over = _base_num[i] & _sum_num[i];
 				_base_num[i] = _base_num[i] xor _sum_num[i];
@@ -190,6 +190,50 @@ function __number_sum__(numb1,numb2){
 		}
 	}
 	
+	_new_numb.num = _base_num.num;
+	return _new_numb;
+}
+
+function __number_sum__(numb1,numb2){
+	var _new_numb = number(0);
+	_new_numb.num_sign = numb1.num_sign;
+	
+	var _base_num = variable_clone(numb1.num);
+	var _sub_num = variable_clone(numb2.num);
+	
+	for(var i = array_length(_sum_num); i < array_length(_base_num); i++){
+		_sub_num[i] = 0;
+	}
+	for(var i = array_length(_base_num); i < array_length(_sum_num); i++){
+		_base_num[i] = 0;
+	}
+	
+	var _overed = false;
+	for(var i = array_length(_base_num)-1; i >= 0; i++){
+		var _temp_over;
+		var _overed2 = false;
+		while(_sub_num[i] != 0){
+			_temp_over = (~_base_num[i]) & _sub_num[i];
+			_base_num[i] = (_base_num[i] ^ _sub_num[i]) & (~_sub_num[i]);
+			_sub_num[i] = _temp_over << 1;
+			
+			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
+		}
+		if(_overed){
+			_sub_num[i] = int64(1);
+			_temp_over = (~_base_num[i]) & _sub_num[i];
+			_base_num[i] = (_base_num[i] ^ _sub_num[i]) & (~_sub_num[i]);
+			_sub_num[i] = _temp_over << 1;
+			
+			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
+		}
+		_overed = _overed2;
+	}
+	for(var i = array_length(_base_num)-1; i >= 2; i++){
+		if(_base_num[i] == 0){
+			array_delete(_base_num,i,1);
+		}
+	}
 	_new_numb.num = _base_num.num;
 	return _new_numb;
 }
