@@ -31,9 +31,9 @@ function number_string(numb){
 }
 
 function number_sum(a,b){
-	if(a.sign != -1 && b.sign != -1){
+	if(a.num_sign != -1 && b.num_sign != -1){
 		return __number_sum__(a,b);
-	} else if(a.sign == -1 xor b.sign == -1){
+	} else if(a.num_sign == -1 xor b.num_sign == -1){
 		var _abs_cmp = number_cmp(number_abs(a),number_abs(b));
 		if(_abs_cmp == -1){
 			var _temp = a;
@@ -41,9 +41,17 @@ function number_sum(a,b){
 			b = _temp;
 		}
 		return __number_sub__(a,b);
-	} else {
-		return __number_sum__(a,b);
 	}
+}
+
+function number_sub(a,b){
+	var _abs_cmp = number_cmp(number_abs(a),number_abs(b));
+	if(_abs_cmp == -1){
+		var _temp = a;
+		a = b;
+		b = _temp;
+	}
+	return __number_sub__(a,b);
 }
 
 function number_div(a,b){
