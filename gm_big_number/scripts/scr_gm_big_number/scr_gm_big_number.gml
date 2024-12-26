@@ -45,7 +45,7 @@ function __number_class_element__(num) constructor{
 		
 		var _is_not_zero = false;
 		for(var i = (string_length(_str_int)-1) div 9; i >= 0; i--){
-			var _str = string_copy(_str_int,max(string_length(_str_int)-((i+1)*9),0)+1,min(9,string_length(_str_int)-((i+1)*9)+9+1));
+			var _str = string_copy(_str_int,max(string_length(_str_int)-((i+1)*9),0)+1,min(9,string_length(_str_int)-((i+1)*9)+9));
 			_real = real(_str);
 			if(_real != 0){
 				_is_not_zero = true;
@@ -61,6 +61,7 @@ function __number_class_element__(num) constructor{
 
 function number_string(numb){
 	var _str = "";
+	if(numb.num_sign == -1){_str += "-"}
 	for(var i = 0; i < array_length(numb.num); i++){
 		_str += "|";
 		for(var ii = 63; ii >= 0; ii--){
@@ -174,6 +175,7 @@ function __number_multiply__(numb1,numb2){
 							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
 						}
 					}
+					show_debug_message($"_temp_num {numb2} {iii}: {_shift} {numb1.num[ii]}\n"+number_string(_temp_num)+"--------------");
 					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
