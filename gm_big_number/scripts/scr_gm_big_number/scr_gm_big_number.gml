@@ -157,7 +157,7 @@ function __number_multiply__(numb1,numb2){
 	for(var i = 0; i < array_length(numb2.num); i++){
 		for(var ii = 0; ii < array_length(numb1.num); ii++){
 			for(var iii = 0; iii < 63; iii++){
-				if(numb2.num[i] & (int64(1) << iii) != 0){
+				if((numb2.num[i] & (int64(1) << iii)) != 0){
 					var _shift = 63*i+iii-63;
 					var _temp_num = number(0);
 					_temp_num.num_sign = 1;
@@ -173,6 +173,7 @@ function __number_multiply__(numb1,numb2){
 							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
 						}
 					}
+					//show_debug_message($"_temp_num {numb2} {iii}: {_shift} {numb2.num[i]}\n"+number_string(_temp_num)+"--------------");
 					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
