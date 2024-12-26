@@ -174,7 +174,7 @@ function __number_multiply__(numb1,numb2){
 							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
 						}
 					}
-					show_debug_message($"*****************\n{number_string(_new_numb)}\n{number_string(_temp_num)}\n{number_string(__number_sum__(_new_numb,_temp_num))}")
+					//show_debug_message($"*****************\n{number_string(_new_numb)}\n{number_string(_temp_num)}\n{number_string(__number_sum__(_new_numb,_temp_num))}")
 					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
