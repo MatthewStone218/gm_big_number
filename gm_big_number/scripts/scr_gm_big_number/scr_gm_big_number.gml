@@ -9,12 +9,13 @@ function __number_class_element__(num) constructor{
 		var _num_fract = int64(0);
 		var _frac = frac(abs(num));
 		for(var i = 1; i < 62+1; i++){
-			if(power(0.5,i) <= _frac){
+			_num_fract = _num_fract << 1;
+			if(sign(_frac) == 1 && power(0.5,i) <= _frac){
 				_frac -= power(0.5,i);
 				_num_fract += 1;
 			}
-			_num_fract = _num_fract << 1;
 		}
+		
 		self.num_sign = sign(num);
 		self.num = [_num_fract, int64(num)];
 	} else {
@@ -60,7 +61,7 @@ function __number_class_element__(num) constructor{
 		var _num_fract = int64(0);
 		var _frac = frac(abs(real(_str_fract)));
 		for(var i = 1; i < 62+1; i++){
-			if(power(0.5,i) <= _frac){
+			if(sign(_frac) == 1 && power(0.5,i) <= _frac){
 				_frac -= power(0.5,i);
 				_num_fract += int64(1);
 			}
@@ -97,12 +98,6 @@ function number_sum(a,b){
 }
 
 function number_sub(a,b){
-	var _abs_cmp = number_cmp(number_abs(a),number_abs(b));
-	if(_abs_cmp == -1){
-		var _temp = a;
-		a = b;
-		b = _temp;
-	}
 	return __number_sub__(a,b);
 }
 
@@ -221,7 +216,7 @@ function __number_reciprocal__(numb){
 		_numb_result = __number_multiply__(_numb_result,(__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result))));
 	}
 	
-	_new_numb.num = variable_clone(_numb_result);
+	_new_numb.num = variable_clone(_numb_result.num);
 	
 	return _new_numb;
 }
@@ -272,7 +267,14 @@ function __number_sum__(numb1,numb2){
 
 function __number_sub__(numb1,numb2){
 	var _new_numb = number(0);
-	_new_numb.num_sign = numb1.num_sign;
+	_new_numb.num_sign = number_cmp(numb1,numb2);
+	
+	var _abs_cmp = number_cmp(number_abs(numb1),number_abs(numb2));
+	if(_abs_cmp == -1){
+		var _temp = numb1;
+		numb1 = numb2;
+		numb2 = _temp;
+	}
 	
 	var _base_num = variable_clone(numb1.num);
 	var _sub_num = variable_clone(numb2.num);
@@ -285,12 +287,12 @@ function __number_sub__(numb1,numb2){
 	}
 	
 	var _overed = false;
-	for(var i = array_length(_base_num)-1; i >= 0; i++){
+	for(var i = array_length(_base_num)-1; i >= 0; i--){
 		var _temp_over;
 		var _overed2 = false;
 		while(_sub_num[i] != 0){
 			_temp_over = (~_base_num[i]) & _sub_num[i];
-			_base_num[i] = (_base_num[i] ^ _sub_num[i]) & (~_sub_num[i]);
+			_base_num[i] = _base_num[i] ^ _sub_num[i];
 			_sub_num[i] = _temp_over << 1;
 			
 			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
@@ -298,14 +300,14 @@ function __number_sub__(numb1,numb2){
 		if(_overed){
 			_sub_num[i] = int64(1) << 62;
 			_temp_over = (~_base_num[i]) & _sub_num[i];
-			_base_num[i] = (_base_num[i] ^ _sub_num[i]) & (~_sub_num[i]);
+			_base_num[i] = _base_num[i] ^ _sub_num[i];
 			_sub_num[i] = _temp_over << 1;
 			
 			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
 		}
 		_overed = _overed2;
 	}
-	for(var i = array_length(_base_num)-1; i >= 2; i++){
+	for(var i = array_length(_base_num)-1; i >= 2; i--){
 		if(_base_num[i] == 0){
 			array_delete(_base_num,i,1);
 		}
