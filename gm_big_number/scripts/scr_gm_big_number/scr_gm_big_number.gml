@@ -165,7 +165,7 @@ function __number_multiply__(numb1,numb2){
 		for(var ii = 0; ii < array_length(numb1.num); ii++){
 			for(var iii = 0; iii < 63; iii++){
 				if((numb2.num[i] & (int64(1) << iii)) != 0){
-					var _shift = 63*i+iii-63;
+					var _shift = 63*i+iii-63;//show_message($"63*{i}+{iii}-63 = {_shift}")
 					var _temp_num = number(0);
 					_temp_num.num_sign = 1;
 					for(var iiii = 0; iiii < _shift div 63; iiii++){
@@ -177,14 +177,16 @@ function __number_multiply__(numb1,numb2){
 					} else {
 						_shift_left = -((-_shift) mod 63);
 					}
-					if(ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63)) >= 0){
-						_temp_num.num[ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))] = (_shift_left >= 0) ? (numb1.num[ii] << _shift_left) : (numb1.num[ii] >> -_shift_left);
+					var _index = ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63));
+					if(_index >= 0){
+						_temp_num.num[_index] = (_shift_left >= 0) ? (numb1.num[ii] << _shift_left) : (numb1.num[ii] >> -_shift_left);
+						if(sign(_temp.num[_index]) == -1){_temp.num[_index] *= -1;}
 					}
 					var _shift_right;
 					if(_shift >= 0){
-						_shift_right = 64-(_shift mod 63);
+						_shift_right = 63-(_shift mod 63);
 					} else {
-						_shift_right = -(64-((-_shift) mod 63));
+						_shift_right = -(63-((-_shift) mod 63));
 					}
 					if(_shift != 0 && ii + (((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))) + sign(_shift) >= 0){
 						var _temp = (_shift_right >= 0) ? (numb1.num[ii] >> _shift_right) : (numb1.num[ii] << -_shift_right);
@@ -192,12 +194,11 @@ function __number_multiply__(numb1,numb2){
 							_temp_num.num[ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63)) + sign(_shift)] = _temp;
 						}
 					}
-					_new_numb = __number_sum__(_new_numb,_temp_num);show_message($"{_temp_num} 123")
+					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
 		}
 	}
-	
 	return _new_numb;
 }
 
@@ -234,11 +235,9 @@ function __number_reciprocal__(numb){
 	var _n2 = number(2);
 	
 	for(var i = 0; i < 7; i++){
-		//show_message($"{_numb_result}*({_n2}-({_numb_original}*{_numb_result})) = {__number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)))}")
 		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
 		if(_result.num_sign == -1){
 			_numb_result = __number_multiply__(number(0.5),_numb_result);
-			//show_message($"{__number_multiply__(number(0.5),_numb_result)} {_numb_result} {_result} {i}")
 			i--;
 			continue;
 		}
