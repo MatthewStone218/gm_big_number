@@ -8,12 +8,12 @@ function __number_class_element__(num) constructor{
 	if(is_real(num)){
 		var _num_fract = int64(0);
 		var _frac = frac(abs(num));
-		for(var i = 1; i < 63+1; i++){
-			_num_fract = _num_fract << 1;
-			if(power(0.5,i) < _frac){
+		for(var i = 1; i < 62+1; i++){
+			if(power(0.5,i) <= _frac){
 				_frac -= power(0.5,i);
 				_num_fract += 1;
 			}
+			_num_fract = _num_fract << 1;
 		}
 		self.num_sign = sign(num);
 		self.num = [_num_fract, int64(num)];
@@ -32,11 +32,11 @@ function __number_class_element__(num) constructor{
 		
 		var _str_int;
 		var _str_fract;
-		var _dot_pos = string_pos(num,".");
+		var _dot_pos = string_pos(".",num);
 		
-		if(_dot_pos){
+		if(_dot_pos != 0){
 			_str_int = string_copy(num,1,_dot_pos-1);
-			_str_fract = string_copy(num,_dot_pos+1,string_length(num)-_dot_pos);
+			_str_fract = "0."+string_copy(num,_dot_pos+1,string_length(num)-_dot_pos);
 		} else {
 			_str_int = num;
 			_str_fract = "0";
@@ -56,6 +56,17 @@ function __number_class_element__(num) constructor{
 			//show_debug_message($"***********\n{number_string(number(_real))}\n{number_string(__number_power_real__(number(1000000000),i))}\n{number_string(_sum_num)}");
 			self.num = _sum_num.num;
 		}
+		
+		var _num_fract = int64(0);
+		var _frac = frac(abs(real(_str_fract)));
+		for(var i = 1; i < 62+1; i++){
+			if(power(0.5,i) <= _frac){
+				_frac -= power(0.5,i);
+				_num_fract += int64(1);
+			}
+			_num_fract = _num_fract << 1;
+		}
+		self.num[0] = _num_fract;
 	}
 }
 
@@ -285,7 +296,7 @@ function __number_sub__(numb1,numb2){
 			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
 		}
 		if(_overed){
-			_sub_num[i] = int64(1);
+			_sub_num[i] = int64(1) << 62;
 			_temp_over = (~_base_num[i]) & _sub_num[i];
 			_base_num[i] = (_base_num[i] ^ _sub_num[i]) & (~_sub_num[i]);
 			_sub_num[i] = _temp_over << 1;
