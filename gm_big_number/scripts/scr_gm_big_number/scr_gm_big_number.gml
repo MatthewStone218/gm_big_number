@@ -180,7 +180,8 @@ function __number_multiply__(numb1,numb2){
 					var _index = ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63));
 					if(_index >= 0){
 						_temp_num.num[_index] = (_shift_left >= 0) ? (numb1.num[ii] << _shift_left) : (numb1.num[ii] >> -_shift_left);
-						if(sign(_temp.num[_index]) == -1){_temp.num[_index] *= -1;}
+						_temp_num.num[_index] = _temp_num.num[_index] & 0b0111111111111111111111111111111111111111111111111111111111111111;
+						//show_message($"{numb1.num[ii]} {(_shift_left >= 0)} {(numb1.num[ii] << _shift_left)}")
 					}
 					var _shift_right;
 					if(_shift >= 0){
@@ -188,10 +189,12 @@ function __number_multiply__(numb1,numb2){
 					} else {
 						_shift_right = -(63-((-_shift) mod 63));
 					}
-					if(_shift != 0 && ii + (((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))) + sign(_shift) >= 0){
+					var _index = ii + (((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))) + sign(_shift);
+					if(_shift != 0 && _index >= 0){
 						var _temp = (_shift_right >= 0) ? (numb1.num[ii] >> _shift_right) : (numb1.num[ii] << -_shift_right);
 						if(_temp != 0){
-							_temp_num.num[ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63)) + sign(_shift)] = _temp;
+							_temp_num.num[_index] = _temp;
+							_temp_num.num[_index] = _temp_num.num[_index] & 0b0111111111111111111111111111111111111111111111111111111111111111;
 						}
 					}
 					_new_numb = __number_sum__(_new_numb,_temp_num);
@@ -237,6 +240,7 @@ function __number_reciprocal__(numb){
 	for(var i = 0; i < 7; i++){
 		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
 		if(_result.num_sign == -1){
+			show_message($"{_numb_result}\n{__number_multiply__(number(0.5),_numb_result)}\n{_result}")
 			_numb_result = __number_multiply__(number(0.5),_numb_result);
 			i--;
 			continue;
