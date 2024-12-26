@@ -19,21 +19,61 @@ function __number_class_element__(num) constructor{
 		self.num_sign = sign(num);
 		self.num = [_num_fract, abs(num)];
 	} else {
-		show_error("big number: defining number with string is not yet implemented!",1);
+		self.num = 0;
+		var _sign = string_char_at(num,1);
+		if(_sign == "+"){
+			self.num_sign = 1;
+			num = string_copy(num,2,string_length(num)-1);
+		} else if(_sign == "-"){
+			self.num_sign = -1;
+			num = string_copy(num,2,string_length(num)-1);
+		} else {
+			self.num_sign = 1;
+		}
+		
+		var _str_int;
+		var _str_fract;
+		var _dot_pos = string_pos(num,".");
+		
+		if(_dot_pos){
+			_str_int = string_copy(num,1,_dot_pos-1);
+			_str_fract = string_copy(num,_dot_pos+1,string_length(num)-_dot_pos);
+		} else {
+			_str_int = num;
+			_str_fract = "0";
+		}
+		
+		var _is_not_zero = false;
+		for(var i = (string_length(_str_int)-1) div 9; i >= 0; i--){
+			var _str = string_copy(_str_int,max(string_length(_str_int)-((i+1)*9),0)+1,min(9,string_length(_str_int)-((i+1)*9)+9+1));
+			_real = real(_str);
+			if(_real != 0){
+				_is_not_zero = true;
+			}
+			if(_real == 0 && _is_not_zero){
+				_real = 1000000000;
+			}
+			var _sum_num = __number_sum__(self,__number_multiply__(number(_real),__number_power_real__(number(1000000000),i)));
+			self.num = _sum_num.num;
+		}
 	}
 }
 
 function number_string(numb){
 	var _str = "";
-	for(var i = 0; i < array_length(numb); i++){
-		
+	for(var i = 0; i < array_length(numb.num); i++){
+		_str += "|";
+		for(var ii = 63; ii >= 0; ii--){
+			_str += string((numb.num[i] & (int64(1) << ii)) != 0);
+		}
 	}
+	return _str;
 }
 
 function number_sum(a,b){
 	if(a.num_sign != -1 && b.num_sign != -1){
 		return __number_sum__(a,b);
-	} else if(a.num_sign == -1 xor b.num_sign == -1){
+	} else {
 		var _abs_cmp = number_cmp(number_abs(a),number_abs(b));
 		if(_abs_cmp == -1){
 			var _temp = a;
@@ -52,6 +92,10 @@ function number_sub(a,b){
 		b = _temp;
 	}
 	return __number_sub__(a,b);
+}
+
+function number_multiply(a,b){
+	return __number_multiply__(a,b);
 }
 
 function number_div(a,b){
@@ -96,6 +140,17 @@ function number_abs(numb){
 	return _new_numb;
 }
 
+function __number_power_real__(numb1,pow){
+	var _new_numb = number(1);
+	var _pow_numb = number(0);
+	_pow_numb.num = variable_clone(numb1.num);
+	_pow_numb.num_sign = numb1.num_sign;
+	repeat(pow){
+		_new_numb = __number_multiply__(_new_numb,_pow_numb);
+	}
+	return _new_numb;
+}
+
 function __number_multiply__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = numb1.num_sign*numb2.num_sign;
@@ -103,18 +158,22 @@ function __number_multiply__(numb1,numb2){
 	for(var i = 0; i < array_length(numb2.num); i++){
 		for(var ii = 0; ii < array_length(numb1.num); ii++){
 			for(var iii = 0; iii < 63; iii++){
-				if(numb2.num & (int64(1) << iii) != 0){
+				if(numb2.num[i] & (int64(1) << iii) != 0){
 					var _shift = 63*i+iii-63;
 					var _temp_num = number(0);
 					_temp_num.num_sign = 1;
-					if(_shift > 0){
-						for(var iiii = 0; iiii < _shift div 63; iiii++){
-							_temp_num.num[iiii] = 0;
-						}
-						_temp_num.num[_shift div 63] = numb1.num[ii] << (_shift mod 63);
-						_temp_num.num[(_shift div 63)+1] = numb1.num[ii] >> (63-(_shift mod 63));
+					for(var iiii = 0; iiii < _shift div 63; iiii++){
+						_temp_num.num[iiii] = 0;
 					}
-				
+					if(ii + (_shift div 63) >= 0){
+						_temp_num.num[ii + (_shift div 63)] = numb1.num[ii] << (_shift mod 63);
+					}
+					if(_shift != 0 && ii + ((_shift div 63)+sign(_shift)) >= 0){
+						var _temp = numb1.num[ii] >> (63-(_shift mod 63));
+						if(_temp != 0){
+							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
+						}
+					}
 					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
@@ -131,7 +190,7 @@ function __number_reciprocal__(numb){
 		show_error("big number: can't reciprocal 0",true);
 	}
 	
-	_new_numb.num_sign = numb1.num_sign;
+	_new_numb.num_sign = numb.num_sign;
 	
 	if(array_length(numb.num) >= 3){
 		_new_numb.num = [int64(0),int64(0)];
@@ -177,7 +236,6 @@ function __number_sum__(numb1,numb2){
 			_temp_over = _base_num[i] & _sum_num[i];
 			_base_num[i] = _base_num[i] ^ _sum_num[i];
 			_sum_num[i] = _temp_over << 1;
-			
 			_overed2 = _overed2 || (_temp_over & (int64(1) << 62) != 0);
 		}
 		if(_overed){
@@ -207,10 +265,10 @@ function __number_sub__(numb1,numb2){
 	var _base_num = variable_clone(numb1.num);
 	var _sub_num = variable_clone(numb2.num);
 	
-	for(var i = array_length(_sum_num); i < array_length(_base_num); i++){
+	for(var i = array_length(_sub_num); i < array_length(_base_num); i++){
 		_sub_num[i] = 0;
 	}
-	for(var i = array_length(_base_num); i < array_length(_sum_num); i++){
+	for(var i = array_length(_base_num); i < array_length(_sub_num); i++){
 		_base_num[i] = 0;
 	}
 	
