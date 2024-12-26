@@ -239,8 +239,9 @@ function __number_reciprocal__(numb){
 	
 	for(var i = 0; i < 7; i++){
 		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
-		if(_result.num_sign == -1){
-			show_message($"{_numb_result}\n{__number_multiply__(number(0.5),_numb_result)}\n{_result}")
+		//show_message($"{_result} = {_numb_result} * (2 - {_numb_original} * {_numb_result})\n{i}\n\n{__number_multiply__(_numb_original,_numb_result)}\n\n{__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result))}")
+		if(_result.num_sign <= 0){
+			if(_numb_result == 0){break;}
 			_numb_result = __number_multiply__(number(0.5),_numb_result);
 			i--;
 			continue;
@@ -318,7 +319,7 @@ function __number_sub__(numb1,numb2){
 	}
 	
 	var _overed = false;
-	for(var i = array_length(_base_num)-1; i >= 0; i--){
+	for(var i = 0; i < array_length(_base_num); i++){
 		var _temp_over;
 		var _overed2 = false;
 		while(_sub_num[i] != 0){
@@ -326,7 +327,7 @@ function __number_sub__(numb1,numb2){
 			_base_num[i] = _base_num[i] ^ _sub_num[i];
 			_sub_num[i] = _temp_over << 1;
 			
-			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
+			_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
 		}
 		if(_overed){
 			_sub_num[i] = int64(1) << 62;
@@ -334,7 +335,7 @@ function __number_sub__(numb1,numb2){
 			_base_num[i] = _base_num[i] ^ _sub_num[i];
 			_sub_num[i] = _temp_over << 1;
 			
-			_overed2 = _overed2 || (_temp_over & int64(1) != 0);
+			_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
 		}
 		_overed = _overed2;
 	}
