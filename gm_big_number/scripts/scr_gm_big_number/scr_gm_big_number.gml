@@ -53,6 +53,7 @@ function __number_class_element__(num) constructor{
 				_real = 1000000000;
 			}
 			var _sum_num = __number_sum__(self,__number_multiply__(number(_real),__number_power_real__(number(1000000000),i)));
+			//show_debug_message($"***********\n{number_string(number(_real))}\n{number_string(__number_power_real__(number(1000000000),i))}\n{number_string(_sum_num)}");
 			self.num = _sum_num.num;
 		}
 	}
@@ -63,7 +64,7 @@ function number_string(numb){
 	if(numb.num_sign == -1){_str += "-"}
 	for(var i = 0; i < array_length(numb.num); i++){
 		_str += "|";
-		for(var ii = 63; ii >= 0; ii--){
+		for(var ii = 62; ii >= 0; ii--){
 			_str += string((numb.num[i] & (int64(1) << ii)) != 0);
 		}
 	}
@@ -173,7 +174,7 @@ function __number_multiply__(numb1,numb2){
 							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
 						}
 					}
-					//show_debug_message($"_temp_num {numb2} {iii}: {_shift} {numb2.num[i]}\n"+number_string(_temp_num)+"--------------");
+					show_debug_message($"*****************\n{number_string(_new_numb)}\n{number_string(_temp_num)}\n{number_string(__number_sum__(_new_numb,_temp_num))}")
 					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
@@ -245,7 +246,7 @@ function __number_sum__(numb1,numb2){
 				_base_num[i] = _base_num[i] xor _sum_num[i];
 				_sum_num[i] = _temp_over << 1;
 			
-				_overed2 = _overed2 || (_temp_over & (int64(1) << 62) != 0);
+				_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
 			}
 		}
 		_overed = _overed2;
