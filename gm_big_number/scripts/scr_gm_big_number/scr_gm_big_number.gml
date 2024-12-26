@@ -171,8 +171,20 @@ function __number_multiply__(numb1,numb2){
 					for(var iiii = 0; iiii < _shift div 63; iiii++){
 						_temp_num.num[iiii] = 0;
 					}
+					var _shift_left;
+					if(_shift >= 0){
+						_shift_left = _shift mod 63;
+					} else {
+						_shift_left = -((-_shift) mod 63);
+					}
 					if(ii + (_shift div 63) >= 0){
-						_temp_num.num[ii + (_shift div 63)] = numb1.num[ii] << (_shift mod 63);
+						_temp_num.num[ii + (_shift div 63)] = numb1.num[ii] << _shift_left;
+					}
+					var _shift_right;
+					if(_shift >= 0){
+						_shift_right = 63-(_shift mod 63);
+					} else {
+						_shift_right = -(63-((-_shift) mod 63));
 					}
 					if(_shift != 0 && ii + ((_shift div 63)+sign(_shift)) >= 0){
 						var _temp = numb1.num[ii] >> (63-(_shift mod 63));
@@ -193,7 +205,14 @@ function __number_multiply__(numb1,numb2){
 function __number_reciprocal__(numb){
 	var _new_numb = number(0);
 	
-	if(numb.num[0] == 0 && numb.num[1] == 0){
+	var _blank = true;
+	for(var i = 0; i < array_length(numb.num); i++){
+		if(numb.num[i] != 0){
+			_blank = false;
+			break;
+		}
+	}
+	if(_blank){
 		show_error("big number: can't reciprocal 0",true);
 	}
 	
@@ -201,19 +220,25 @@ function __number_reciprocal__(numb){
 	
 	if(array_length(numb.num) >= 3){
 		_new_numb.num = [int64(0),int64(0)];
+		_new_numb.num_sign = 0;
 		return _new_numb;
 	}
 	
 	var _numb_result = number(1);
 	var _numb_original = number(0);
-	_numb_original.num[0] = numb.num[0];
-	_numb_original.num[1] = numb.num[1];
+	_numb_original.num = variable_clone(numb.num);
 	_numb_original.num_sign = 1;
 	
 	var _n2 = number(2);
 	
-	for(var i = 0; i < 7; i++){
-		_numb_result = __number_multiply__(_numb_result,(__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result))));
+	for(var i = 0; i < 7; i++){show_message($"{_numb_result}*({_n2}-({_numb_original}*{_numb_result})) = {__number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)))}")
+		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
+		if(sign(_result) <= 0){
+			_numb_result = __number_multiply__(number(0.5),_numb_result);
+			i--;
+			continue;
+		}
+		_numb_result = _result;
 	}
 	
 	_new_numb.num = variable_clone(_numb_result.num);
@@ -271,13 +296,12 @@ function __number_sub__(numb1,numb2){
 	
 	var _abs_cmp = number_cmp(number_abs(numb1),number_abs(numb2));
 	if(_abs_cmp == -1){
-		var _temp = numb1;
-		numb1 = numb2;
-		numb2 = _temp;
+		var _base_num = variable_clone(numb2.num);
+		var _sub_num = variable_clone(numb1.num);
+	} else {
+		var _base_num = variable_clone(numb1.num);
+		var _sub_num = variable_clone(numb2.num);
 	}
-	
-	var _base_num = variable_clone(numb1.num);
-	var _sub_num = variable_clone(numb2.num);
 	
 	for(var i = array_length(_sub_num); i < array_length(_base_num); i++){
 		_sub_num[i] = 0;
