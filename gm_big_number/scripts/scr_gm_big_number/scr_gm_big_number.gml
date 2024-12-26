@@ -15,11 +15,10 @@ function __number_class_element__(num) constructor{
 				_num_fract += 1;
 			}
 		}
-		num = int64(num);
 		self.num_sign = sign(num);
-		self.num = [_num_fract, abs(num)];
+		self.num = [_num_fract, int64(num)];
 	} else {
-		self.num = 0;
+		self.num = [int64(0),int64(0)];
 		var _sign = string_char_at(num,1);
 		if(_sign == "+"){
 			self.num_sign = 1;
@@ -46,7 +45,7 @@ function __number_class_element__(num) constructor{
 		var _is_not_zero = false;
 		for(var i = (string_length(_str_int)-1) div 9; i >= 0; i--){
 			var _str = string_copy(_str_int,max(string_length(_str_int)-((i+1)*9),0)+1,min(9,string_length(_str_int)-((i+1)*9)+9));
-			_real = real(_str);
+			var _real = real(_str);
 			if(_real != 0){
 				_is_not_zero = true;
 			}
@@ -155,7 +154,6 @@ function __number_power_real__(numb1,pow){
 function __number_multiply__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = numb1.num_sign*numb2.num_sign;
-	
 	for(var i = 0; i < array_length(numb2.num); i++){
 		for(var ii = 0; ii < array_length(numb1.num); ii++){
 			for(var iii = 0; iii < 63; iii++){
@@ -175,7 +173,6 @@ function __number_multiply__(numb1,numb2){
 							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
 						}
 					}
-					show_debug_message($"_temp_num {numb2} {iii}: {_shift} {numb1.num[ii]}\n"+number_string(_temp_num)+"--------------");
 					_new_numb = __number_sum__(_new_numb,_temp_num);
 				}
 			}
