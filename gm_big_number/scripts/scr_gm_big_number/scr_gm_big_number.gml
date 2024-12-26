@@ -9,15 +9,15 @@ function __number_class_element__(num) constructor{
 		var _num_fract = int64(0);
 		var _frac = frac(abs(num));
 		for(var i = 1; i < 62+1; i++){
-			_num_fract = _num_fract << 1;
 			if(sign(_frac) == 1 && power(0.5,i) <= _frac){
 				_frac -= power(0.5,i);
 				_num_fract += 1;
 			}
+			_num_fract = _num_fract << 1;
 		}
 		
 		self.num_sign = sign(num);
-		self.num = [_num_fract, int64(num)];
+		self.num = [_num_fract, int64(abs(num))];
 	} else {
 		self.num = [int64(0),int64(0)];
 		var _sign = string_char_at(num,1);
@@ -177,23 +177,22 @@ function __number_multiply__(numb1,numb2){
 					} else {
 						_shift_left = -((-_shift) mod 63);
 					}
-					if(ii + (_shift div 63) >= 0){
-						_temp_num.num[ii + (_shift div 63)] = numb1.num[ii] << _shift_left;
+					if(ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63)) >= 0){
+						_temp_num.num[ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))] = (_shift_left >= 0) ? (numb1.num[ii] << _shift_left) : (numb1.num[ii] >> -_shift_left);
 					}
 					var _shift_right;
 					if(_shift >= 0){
-						_shift_right = 63-(_shift mod 63);
+						_shift_right = 64-(_shift mod 63);
 					} else {
-						_shift_right = -(63-((-_shift) mod 63));
+						_shift_right = -(64-((-_shift) mod 63));
 					}
-					if(_shift != 0 && ii + ((_shift div 63)+sign(_shift)) >= 0){
-						var _temp = numb1.num[ii] >> (63-(_shift mod 63));
+					if(_shift != 0 && ii + (((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))) + sign(_shift) >= 0){
+						var _temp = (_shift_right >= 0) ? (numb1.num[ii] >> _shift_right) : (numb1.num[ii] << -_shift_right);
 						if(_temp != 0){
-							_temp_num.num[ii + ((_shift div 63)+sign(_shift))] = _temp;
+							_temp_num.num[ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63)) + sign(_shift)] = _temp;
 						}
 					}
-					//show_debug_message($"*****************\n{number_string(_new_numb)}\n{number_string(_temp_num)}\n{number_string(__number_sum__(_new_numb,_temp_num))}")
-					_new_numb = __number_sum__(_new_numb,_temp_num);
+					_new_numb = __number_sum__(_new_numb,_temp_num);show_message($"{_temp_num} 123")
 				}
 			}
 		}
@@ -224,24 +223,29 @@ function __number_reciprocal__(numb){
 		return _new_numb;
 	}
 	
+	var _scale = int64(32768);
+	var _scale_reciprocal = int64(4503599627370496);
+	
 	var _numb_result = number(1);
 	var _numb_original = number(0);
-	_numb_original.num = variable_clone(numb.num);
+	_numb_original.num = variable_clone(numb.num)//__number_multiply__(numb,number(_scale)).num;
 	_numb_original.num_sign = 1;
 	
 	var _n2 = number(2);
 	
-	for(var i = 0; i < 7; i++){show_message($"{_numb_result}*({_n2}-({_numb_original}*{_numb_result})) = {__number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)))}")
+	for(var i = 0; i < 7; i++){
+		//show_message($"{_numb_result}*({_n2}-({_numb_original}*{_numb_result})) = {__number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)))}")
 		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
-		if(sign(_result) <= 0){
+		if(_result.num_sign == -1){
 			_numb_result = __number_multiply__(number(0.5),_numb_result);
+			//show_message($"{__number_multiply__(number(0.5),_numb_result)} {_numb_result} {_result} {i}")
 			i--;
 			continue;
 		}
 		_numb_result = _result;
 	}
 	
-	_new_numb.num = variable_clone(_numb_result.num);
+	_new_numb.num = variable_clone(_numb_result.num);//__number_multiply__(_numb_result,number(_scale_reciprocal)).num;
 	
 	return _new_numb;
 }
