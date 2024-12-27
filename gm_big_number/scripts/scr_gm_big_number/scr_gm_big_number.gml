@@ -100,12 +100,14 @@ function number_multiply(a,b){
 }
 
 function number_div(a,b){
-	if(array_length(b.num) == 2 && b.num[1] == 0){
+	if(array_length(b.num) == 2 && b.num[0] == 0 && b.num[1] == 0){
 		show_error("big number: can't divide with 0",1);
 	}
-	if(array_length(a.num) == 2 && b.num[1] == 0){
+	if(array_length(a.num) == 2 && a.num[0] == 0 && a.num[1] == 0){
 		return number(0);
 	}
+	
+	var _result_num = number(0);
 	return __number_multiply__(a,__number_reciprocal__(b));
 }
 
