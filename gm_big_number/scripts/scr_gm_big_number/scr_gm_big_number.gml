@@ -223,9 +223,7 @@ function __number_reciprocal__(numb){
 	_new_numb.num_sign = numb.num_sign;
 	
 	if(array_length(numb.num) >= 3){
-		_new_numb.num = [int64(0),int64(0)];
-		_new_numb.num_sign = 0;
-		return _new_numb;
+		show_error("big number: __number_reciprocal__- number is too big! you need to divide steps.")
 	}
 	
 	var _break = false;
@@ -241,15 +239,16 @@ function __number_reciprocal__(numb){
 		}
 	}
 	
-	var _init_value_shift = -(63 - _b);
+	var _init_value_shift;
 	var _numb_result = number(0);
 	_numb_result.num_sign = 1;
-	if(_init_value_shift >= 0){
-		_numb_result.num = [int64(1) << _init_value_shift]//0
-		//오버플로우
+	
+	if(_a == 1){
+		_init_value_shift = _b+((numb.num[_a] == (int64(1) << _b)) ? 0 : 1);
+		_numb_result.num = [int64(1) << (63 - _init_value_shift), 0];//shift가 0일때 1이어야하므로 63이 맞음. 물론 값이 모두 0이면 위에서 예외처리 됨.
+		_numb_result.num[0] = _numb_result.num[0] & 0b0111111111111111111111111111111111111111111111111111111111111111;
 	} else {
-		_numb_result.num = [int64(1) >> _init_value_shift]//0
-		//오버플로우
+		_init_value_shift = 63 - (_b+((numb.num[_a] == (int64(1) << _b)) ? 0 : 1));
 	}
 
 	var _numb_original = number(0);
