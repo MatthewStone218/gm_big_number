@@ -87,12 +87,6 @@ function number_sum(a,b){
 	if(a.num_sign != -1 && b.num_sign != -1){
 		return __number_sum__(a,b);
 	} else {
-		var _abs_cmp = number_cmp(number_abs(a),number_abs(b));
-		if(_abs_cmp == -1){
-			var _temp = a;
-			a = b;
-			b = _temp;
-		}
 		return __number_sub__(a,b);
 	}
 }
@@ -234,28 +228,39 @@ function __number_reciprocal__(numb){
 		return _new_numb;
 	}
 	
-	var _scale = int64(32768);
+	var _break = false;
+	for(var _a = 1; _a >= 0; _a++){
+		for(var _b = 62; _b >= 0; _b--){
+			if((numb.num[_a] & (int64(1) << _b)) != 0){
+				_break = true;
+				break;
+			}
+		}
+		if(_break){
+			break;
+		}
+	}
 	
-	var _numb_result = number(1);
+	var _init_value_shift = -_b*(_a*2 - 1);
+	var _numb_result = number(0);
+	_numb_result.num_sign = 1;
+	if(_init_value_shift >= 0){
+		_numb_result.num = [int64(1) << _init_value_shift]//0
+		//오버플로우
+	} else {
+		_numb_result.num = [int64(1) >> _init_value_shift]//0
+		//오버플로우
+	}
+
 	var _numb_original = number(0);
-	_numb_original.num = __number_multiply__(numb,number(_scale)).num;
+	_numb_original.num = variable_clone(numb).num;
 	_numb_original.num_sign = 1;
 	
 	var _n2 = number(2);
-	
 	for(var i = 0; i < 7; i++){
 		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
-		//show_message($"{_result} = {_numb_result} * (2 - {_numb_original} * {_numb_result})\n{i}\n\n{__number_multiply__(_numb_original,_numb_result)}\n\n{__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result))}")
-		if(_result.num_sign <= 0){
-			if(_numb_result == 0){break;}
-			_numb_result = __number_multiply__(number(0.5),_numb_result);
-			i--;
-			continue;
-		}
 		_numb_result = _result;
 	}
-	
-	_new_numb.num = __number_multiply__(_numb_result,number(_scale)).num;
 	
 	return _new_numb;
 }
@@ -273,24 +278,25 @@ function __number_sum__(numb1,numb2){
 	for(var i = array_length(_base_num); i < array_length(_sum_num); i++){
 		_base_num[i] = 0;
 	}
-	
 	var _overed = false;
 	for(var i = 0; i < array_length(_base_num); i++){
 		var _temp_over;
 		var _overed2 = false;
 		while(_sum_num[i] != 0){
-			_temp_over = _base_num[i] & _sum_num[i];
+			_temp_over = _base_num[i] & _sum_num[i];//show_message($"1234\n{i}\n{_base_num[i]}\n{_sum_num[i]}")
 			_base_num[i] = _base_num[i] ^ _sum_num[i];
 			_sum_num[i] = _temp_over << 1;
+			_sum_num[i] = _sum_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
 			_overed2 = _overed2 || (_temp_over & (int64(1) << 62) != 0);
+			//if(_overed2)show_message($"{_temp_over}")
 		}
 		if(_overed){
 			_sum_num[i] = int64(1);
 			while(_sum_num[i] != 0){
 				_temp_over = _base_num[i] & _sum_num[i];
-				_base_num[i] = _base_num[i] xor _sum_num[i];
+				_base_num[i] = _base_num[i] ^ _sum_num[i];//show_message($"asfd\n{i}\n{_base_num[i]}\n{_sum_num[i]}")
 				_sum_num[i] = _temp_over << 1;
-			
+				_sum_num[i] = _sum_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
 				_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
 			}
 		}
@@ -332,7 +338,7 @@ function __number_sub__(numb1,numb2){
 			_temp_over = (~_base_num[i]) & _sub_num[i];
 			_base_num[i] = _base_num[i] ^ _sub_num[i];
 			_sub_num[i] = _temp_over << 1;
-			
+			_sub_num[i] = _sub_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
 			_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
 		}
 		if(_overed){
@@ -340,7 +346,7 @@ function __number_sub__(numb1,numb2){
 			_temp_over = (~_base_num[i]) & _sub_num[i];
 			_base_num[i] = _base_num[i] ^ _sub_num[i];
 			_sub_num[i] = _temp_over << 1;
-			
+			_sub_num[i] = _sub_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
 			_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
 		}
 		_overed = _overed2;
