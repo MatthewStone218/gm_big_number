@@ -202,6 +202,13 @@ function __number_multiply__(numb1,numb2){
 			}
 		}
 	}
+	for(var i = array_length(_new_numb.num)-1; i >= 0;i--){
+		if(_new_numb.num[i] == 0){
+			array_delete(_new_numb.num,i,1);
+		} else {
+			break;
+		}
+	}
 	return _new_numb;
 }
 
