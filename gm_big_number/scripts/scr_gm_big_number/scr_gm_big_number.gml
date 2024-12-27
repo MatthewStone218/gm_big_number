@@ -228,11 +228,10 @@ function __number_reciprocal__(numb){
 	}
 	
 	var _scale = int64(32768);
-	var _scale_reciprocal = int64(4503599627370496);
 	
 	var _numb_result = number(1);
 	var _numb_original = number(0);
-	_numb_original.num = variable_clone(numb.num)//__number_multiply__(numb,number(_scale)).num;
+	_numb_original.num = __number_multiply__(numb,number(_scale)).num;
 	_numb_original.num_sign = 1;
 	
 	var _n2 = number(2);
@@ -249,7 +248,7 @@ function __number_reciprocal__(numb){
 		_numb_result = _result;
 	}
 	
-	_new_numb.num = variable_clone(_numb_result.num);//__number_multiply__(_numb_result,number(_scale_reciprocal)).num;
+	_new_numb.num = __number_multiply__(_numb_result,number(_scale)).num;
 	
 	return _new_numb;
 }

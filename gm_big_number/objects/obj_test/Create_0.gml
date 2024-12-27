@@ -1,6 +1,6 @@
 /// @description 여기에 설명 삽입
 // 이 에디터에 코드를 작성할 수 있습니다
-show_message(number_sub(number(2),number(1)));
+show_message(number_sub(number(3.5),number(4.75)));
 num1 = number("2");
 num2 = number("4");
 show_message(number_multiply(num2,num1))
