@@ -241,7 +241,7 @@ function __number_reciprocal__(numb){
 		}
 	}
 	
-	var _init_value_shift = -_b*(_a*2 - 1);
+	var _init_value_shift = -(63 - _b);
 	var _numb_result = number(0);
 	_numb_result.num_sign = 1;
 	if(_init_value_shift >= 0){
