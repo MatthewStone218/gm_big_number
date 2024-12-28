@@ -283,7 +283,7 @@ function __number_sum__(numb1,numb2){
 		_base_num[i] = _base_num[i] + _sum_num[i];
 		_overed2 = _overed2 || (sign(_base_num[i]) == -1);
 		if(_overed2){
-			_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111 + 1;
+			_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111;
 		}
 		
 		if(_overed){
@@ -291,7 +291,7 @@ function __number_sum__(numb1,numb2){
 			_base_num[i] = _base_num[i] + _sum_num[i];
 			_overed2 = _overed2 || (sign(_base_num[i]) == -1);
 			if(_overed2){
-				_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111 + 1;
+				_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111;
 			}
 		}
 		_overed = _overed2;
@@ -307,6 +307,9 @@ function __number_sum__(numb1,numb2){
 function __number_sub__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = number_cmp(numb1,numb2);
+	
+	var _base_num = variable_clone(numb1.num);
+	var _sum_num = variable_clone(numb2.num);
 	
 	for(var i = array_length(_sub_num); i < array_length(_base_num); i++){
 		_sub_num[i] = 0;
