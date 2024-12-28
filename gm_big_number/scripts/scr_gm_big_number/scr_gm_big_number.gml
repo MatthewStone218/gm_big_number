@@ -284,22 +284,19 @@ function __number_sum__(numb1,numb2){
 	for(var i = 0; i < array_length(_base_num); i++){
 		var _temp_over;
 		var _overed2 = false;
-		while(_sum_num[i] != 0){
-			_temp_over = _base_num[i] & _sum_num[i];//show_message($"1234\n{i}\n{_base_num[i]}\n{_sum_num[i]}")
-			_base_num[i] = _base_num[i] ^ _sum_num[i];
-			_sum_num[i] = _temp_over << 1;
-			_sum_num[i] = _sum_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
-			_overed2 = _overed2 || (_temp_over & (int64(1) << 62) != 0);
-			//if(_overed2)show_message($"{_temp_over}")
+		
+		_base_num[i] = _base_num[i] + _sum_num[i];
+		_overed2 = _overed2 || (sign(_base_num[i]) == -1);
+		if(_overed2){
+			_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111 + 1;
 		}
+		
 		if(_overed){
 			_sum_num[i] = int64(1);
-			while(_sum_num[i] != 0){
-				_temp_over = _base_num[i] & _sum_num[i];
-				_base_num[i] = _base_num[i] ^ _sum_num[i];//show_message($"asfd\n{i}\n{_base_num[i]}\n{_sum_num[i]}")
-				_sum_num[i] = _temp_over << 1;
-				_sum_num[i] = _sum_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
-				_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
+			_base_num[i] = _base_num[i] + _sum_num[i];
+			_overed2 = _overed2 || (sign(_base_num[i]) == -1);
+			if(_overed2){
+				_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111 + 1;
 			}
 		}
 		_overed = _overed2;
