@@ -312,15 +312,6 @@ function __number_sub__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = number_cmp(numb1,numb2);
 	
-	var _abs_cmp = number_cmp(number_abs(numb1),number_abs(numb2));
-	if(_abs_cmp == -1){
-		var _base_num = variable_clone(numb2.num);
-		var _sub_num = variable_clone(numb1.num);
-	} else {
-		var _base_num = variable_clone(numb1.num);
-		var _sub_num = variable_clone(numb2.num);
-	}
-	
 	for(var i = array_length(_sub_num); i < array_length(_base_num); i++){
 		_sub_num[i] = 0;
 	}
