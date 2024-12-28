@@ -123,14 +123,10 @@ function number_cmp(a,b){
 		return -1;
 	}
 	for(var i = array_length(a.num)-1; i >= 0; i--){
-		for(var ii = 63-1; ii >= 0; ii--){
-			var _bit_a = ((a.num[i] & (int64(1) << ii)) != 0);
-			var _bit_b = ((b.num[i] & (int64(1) << ii)) != 0);
-			if(_bit_a > _bit_b){
-				return 1;
-			} else if(_bit_a < _bit_b){
-				return -1;
-			}
+		if(a.num[i] > b.num[i]){
+			return 1;
+		} else if(a.num[i] < b.num[i]){
+			return -1;
 		}
 	}
 	return 0;
