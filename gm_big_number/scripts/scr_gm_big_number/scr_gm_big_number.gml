@@ -282,7 +282,6 @@ function __number_sum__(numb1,numb2){
 	}
 	var _overed = false;
 	for(var i = 0; i < array_length(_base_num); i++){
-		var _temp_over;
 		var _overed2 = false;
 		
 		_base_num[i] = _base_num[i] + _sum_num[i];
