@@ -283,7 +283,7 @@ function __number_sum__(numb1,numb2){
 		_base_num[i] = _base_num[i] + _sum_num[i];
 		_overed2 = _overed2 || (sign(_base_num[i]) == -1);
 		if(_overed2){
-			_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111;
+			_base_num[i] -= 0b100000000000000000000000000000000000000000000000000000000000000;
 		}
 		
 		if(_overed){
@@ -291,7 +291,7 @@ function __number_sum__(numb1,numb2){
 			_base_num[i] = _base_num[i] + _sum_num[i];
 			_overed2 = _overed2 || (sign(_base_num[i]) == -1);
 			if(_overed2){
-				_base_num[i] += 0b1111111111111111111111111111111111111111111111111111111111111111;
+				_base_num[i] -= 0b100000000000000000000000000000000000000000000000000000000000000;
 			}
 		}
 		_overed = _overed2;
