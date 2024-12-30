@@ -4,7 +4,7 @@
 
 num1 = number(0b000000000000000000000000000000000000000000000000000000000000110);
 num2 = number(0b000000000000000000000000000000000000000000000000000000000000010);
-show_message(number_string(__number_reciprocal__(num2)))
-show_message(number_string(number_div(num2,num1)));
+show_debug_message(number_string(__number_reciprocal__(num2)))
+show_debug_message(number_string(number_div(num2,num1)));
 //show_debug_message($"{num1}\n{number_string(num1)}\n{number_string(num2)}\n{number_string(number_sub(num1,num2))}")
 show_debug_message($"{num1}\n{number_string(num1)}\n{number_string(num2)}\n{number_string(__number_reciprocal__(num1))}\n{number_string(__number_reciprocal__(num2))}")
