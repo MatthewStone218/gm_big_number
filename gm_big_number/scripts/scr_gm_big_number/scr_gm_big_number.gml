@@ -323,7 +323,7 @@ function __number_reciprocal_fract__(numb){
 	
 	var _n2 = number(2);
 	for(var i = 0; i < 7; i++){
-		var _result = __number_multiply__(_numb_result,__number_sub__(_n2,__number_multiply__(_numb_original,_numb_result)));
+		var _result = __number_multiply_fract__(_numb_result,__number_sub__(_n2,__number_multiply_fract__(_numb_original,_numb_result)));
 		_numb_result = _result;
 	}
 	
