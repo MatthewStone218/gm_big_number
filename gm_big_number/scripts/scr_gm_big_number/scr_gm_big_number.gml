@@ -281,7 +281,7 @@ function __number_reciprocal_fract__(numb){
 	}
 	
 	var _break = false;
-	for(var _a = _fract_length+1; _a >= 0; _a++){
+	for(var _a = array_length(numb)-1; _a >= 0; _a++){
 		for(var _b = 62; _b >= 0; _b--){
 			if((numb.num[_a] & (int64(1) << _b)) != 0){
 				_break = true;
@@ -293,7 +293,6 @@ function __number_reciprocal_fract__(numb){
 		}
 	}
 	
-	var _init_value_shift;
 	var _numb_result = number(0);
 	_numb_result.num_sign = 1;
 	_numb_result.num = array_create(array_length(numb),0);
@@ -301,21 +300,14 @@ function __number_reciprocal_fract__(numb){
 	if(_a > _fract_length-1){
 		if(_b == 0){
 			_numb_result.num[1] = int64(1);
-			array_delete(_numb_result,0,1);
+			if(array_length(_numb_result) != 2){
+				array_delete(_numb_result,0,1);
+			}
 		} else {
 			_numb_result.num[0] = int64(1) << (63-_b);
 		}
 	} else {
-		_numb_result.num[array_length(_numb_result)-1] = int64(1) << (63-_b);
-	}
-	
-	if(_a == 1){
-		_init_value_shift = _b+((numb.num[_a] == (int64(1) << _b)) ? 0 : 1);
-		_numb_result.num = [int64(1) << (63 - _init_value_shift), 0];//shift가 0일때 1이어야하므로 63이 맞음. 물론 값이 모두 0이면 위에서 예외처리 됨.
-		_numb_result.num[0] = _numb_result.num[0] & 0b0111111111111111111111111111111111111111111111111111111111111111;
-	} else {
-		_init_value_shift = 63 - _b - ((numb.num[_a] == (int64(1) << _b)) ? 0 : 1);
-		_numb_result.num = [0, int64(1) << _init_value_shift];
+		_numb_result.num[array_length(_numb_result)-1] = int64(1) << (62-_b);
 	}
 
 	var _numb_original = number(0);
