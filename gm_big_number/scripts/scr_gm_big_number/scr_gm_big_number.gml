@@ -196,7 +196,7 @@ function __number_multiply__(numb1,numb2){
 			}
 		}
 	}
-	for(var i = array_length(_new_numb.num)-1; i >= 0;i--){
+	for(var i = array_length(_new_numb.num)-1; i >= 2;i--){
 		if(_new_numb.num[i] == 0){
 			array_delete(_new_numb.num,i,1);
 		} else {
@@ -223,7 +223,7 @@ function __number_reciprocal__(numb){
 	_new_numb.num_sign = numb.num_sign;
 	
 	if(array_length(numb.num) >= 3){
-		show_error("big number: __number_reciprocal__- number is too big! you need to divide steps.",true)
+		return number(0);
 	}
 	
 	var _break = false;
@@ -253,7 +253,7 @@ function __number_reciprocal__(numb){
 	}
 
 	var _numb_original = number(0);
-	_numb_original.num = variable_clone(numb).num;
+	_numb_original.num = variable_clone(numb.num);
 	_numb_original.num_sign = 1;
 	
 	var _n2 = number(2);
@@ -262,6 +262,7 @@ function __number_reciprocal__(numb){
 		_numb_result = _result;
 	}
 	
+	_new_numb.num = variable_clone(_numb_result.num);
 	return _new_numb;
 }
 
