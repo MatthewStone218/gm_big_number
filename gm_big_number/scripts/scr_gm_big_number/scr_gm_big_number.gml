@@ -223,7 +223,7 @@ function __number_reciprocal__(numb){
 	_new_numb.num_sign = numb.num_sign;
 	
 	if(array_length(numb.num) >= 3){
-		show_error("big number: __number_reciprocal__- number is too big! you need to divide steps.")
+		show_error("big number: __number_reciprocal__- number is too big! you need to divide steps.",true)
 	}
 	
 	var _break = false;
