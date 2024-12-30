@@ -298,10 +298,17 @@ function __number_reciprocal_fract__(numb){
 	_numb_result.num = array_create(array_length(numb),0);
 	
 	if(_a > _fract_length-1){
+		if((numb.num[_a] & (int64(1) << _b)) != numb.num[_a]){_b += 1;}
+		if(_b >= 63){
+			_b = 0;
+			array_insert(_numb_result,0,0);
+			array_push(_numb_result,0);
+		}
 		if(_b == 0){
 			_numb_result.num[1] = int64(1);
 			if(array_length(_numb_result) != 2){
 				array_delete(_numb_result,0,1);
+				array_delete(_numb_result,array_length(numb)-1,1);
 			}
 		} else {
 			_numb_result.num[0] = int64(1) << (63-_b);
