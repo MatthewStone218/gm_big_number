@@ -86,12 +86,14 @@ function number_string(numb){
 function number_sum(a,b){
 	if(a.num_sign != -1 && b.num_sign != -1){
 		return __number_sum__(a,b);
-	} else {
-		return __number_sub__(a,b);
 	}
+	return __number_sub__(a,b);
 }
 
 function number_sub(a,b){
+	if(a.num_sign == -1 && b.num_sign == -1){
+		return __number_sum__(a,b);
+	}
 	return __number_sub__(a,b);
 }
 
@@ -265,7 +267,11 @@ function __number_reciprocal__(numb){
 
 function __number_sum__(numb1,numb2){
 	var _new_numb = number(0);
-	_new_numb.num_sign = numb1.num_sign;
+	
+	if(number_cmp(numb1,numb2) == 0){
+		return _new_numb;
+	}
+	_new_numb.num_sign = (numb1.num_sign == -1 && numb2.num_sign == -1) ? -1 : 1;
 
 	var _base_num = variable_clone(numb1.num);
 	var _sum_num = variable_clone(numb2.num);
@@ -283,7 +289,8 @@ function __number_sum__(numb1,numb2){
 		_base_num[i] = _base_num[i] + _sum_num[i];
 		_overed2 = _overed2 || (sign(_base_num[i]) == -1);
 		if(_overed2){
-			_base_num[i] -= 0b100000000000000000000000000000000000000000000000000000000000000;
+			_base_num[i] += 0b111111111111111111111111111111111111111111111111111111111111111;
+			_base_num[i] += int64(1);
 		}
 		
 		if(_overed){
@@ -291,7 +298,8 @@ function __number_sum__(numb1,numb2){
 			_base_num[i] = _base_num[i] + _sum_num[i];
 			_overed2 = _overed2 || (sign(_base_num[i]) == -1);
 			if(_overed2){
-				_base_num[i] -= 0b100000000000000000000000000000000000000000000000000000000000000;
+				_base_num[i] += 0b111111111111111111111111111111111111111111111111111111111111111;
+				_base_num[i] += int64(1);
 			}
 		}
 		_overed = _overed2;
@@ -308,8 +316,16 @@ function __number_sub__(numb1,numb2){
 	var _new_numb = number(0);
 	_new_numb.num_sign = number_cmp(numb1,numb2);
 	
-	var _base_num = variable_clone(numb1.num);
-	var _sum_num = variable_clone(numb2.num);
+	var _base_num;
+	var _sub_num;
+	
+	if(_new_numb.num_sign >= 0){
+		_base_num = variable_clone(numb1.num);
+		_sub_num = variable_clone(numb2.num);
+	} else {
+		_base_num = variable_clone(numb2.num);
+		_sub_num = variable_clone(numb1.num);
+	}
 	
 	for(var i = array_length(_sub_num); i < array_length(_base_num); i++){
 		_sub_num[i] = 0;
@@ -320,23 +336,25 @@ function __number_sub__(numb1,numb2){
 	
 	var _overed = false;
 	for(var i = 0; i < array_length(_base_num); i++){
-		var _temp_over;
 		var _overed2 = false;
-		while(_sub_num[i] != 0){
-			_temp_over = (~_base_num[i]) & _sub_num[i];
-			_base_num[i] = _base_num[i] ^ _sub_num[i];
-			_sub_num[i] = _temp_over << 1;
-			_sub_num[i] = _sub_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
-			_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
+		
+		_base_num[i] = _base_num[i] - _sub_num[i];
+		if(_base_num[i] < 0){
+			_overed2 = true;
+			_base_num[i] += 0b111111111111111111111111111111111111111111111111111111111111111;
+			_base_num[i] += int64(1);
+			_overed2 = true;
 		}
 		if(_overed){
-			_sub_num[i] = int64(1) << 62;
-			_temp_over = (~_base_num[i]) & _sub_num[i];
-			_base_num[i] = _base_num[i] ^ _sub_num[i];
-			_sub_num[i] = _temp_over << 1;
-			_sub_num[i] = _sub_num[i] & 0b0111111111111111111111111111111111111111111111111111111111111111;
-			_overed2 = _overed2 || ((_temp_over & (int64(1) << 62)) != 0);
+			_base_num[i] = _base_num[i] - 1;
+			if(_base_num[i] < 0){
+				_overed2 = true;
+				_base_num[i] += 0b111111111111111111111111111111111111111111111111111111111111111;
+				_base_num[i] += int64(1);
+				_overed2 = true;
+			}
 		}
+		
 		_overed = _overed2;
 	}
 	for(var i = array_length(_base_num)-1; i >= 2; i--){
