@@ -159,7 +159,7 @@ function __number_multiply__(numb1,numb2){
 		for(var ii = 0; ii < array_length(numb1.num); ii++){
 			for(var iii = 0; iii < 63; iii++){
 				if((numb2.num[i] & (int64(1) << iii)) != 0){
-					var _shift = 63*i+iii-63;//show_message($"63*{i}+{iii}-63 = {_shift}")
+					var _shift = 63*i+iii-63;
 					var _temp_num = number(0);
 					_temp_num.num_sign = 1;
 					for(var iiii = 0; iiii < _shift div 63; iiii++){
@@ -175,7 +175,6 @@ function __number_multiply__(numb1,numb2){
 					if(_index >= 0){
 						_temp_num.num[_index] = (_shift_left >= 0) ? (numb1.num[ii] << _shift_left) : (numb1.num[ii] >> -_shift_left);
 						_temp_num.num[_index] = _temp_num.num[_index] & 0b0111111111111111111111111111111111111111111111111111111111111111;
-						//show_message($"{numb1.num[ii]} {(_shift_left >= 0)} {(numb1.num[ii] << _shift_left)}")
 					}
 					var _shift_right;
 					if(_shift >= 0){
@@ -206,7 +205,61 @@ function __number_multiply__(numb1,numb2){
 	return _new_numb;
 }
 
-function __number_reciprocal__(numb){
+function __number_multiply_fract__(numb1,numb2){
+	var _new_numb = number(0);
+	_new_numb.num_sign = numb1.num_sign*numb2.num_sign;
+	for(var i = 0; i < array_length(numb2.num); i++){
+		for(var ii = 0; ii < array_length(numb1.num); ii++){
+			for(var iii = 0; iii < 63; iii++){
+				if((numb2.num[i] & (int64(1) << iii)) != 0){
+					var _shift = 63*i+iii-63;
+					var _temp_num = number(0);
+					_temp_num.num_sign = 1;
+					for(var iiii = 0; iiii < _shift div 63; iiii++){
+						_temp_num.num[iiii] = 0;
+					}
+					var _shift_left;
+					if(_shift >= 0){
+						_shift_left = _shift mod 63;
+					} else {
+						_shift_left = -((-_shift) mod 63);
+					}
+					var _index = ii + ((_shift >= 0) ? (_shift div 63) : -(-_shift div 63));
+					if(_index >= 0){
+						_temp_num.num[_index] = (_shift_left >= 0) ? (numb1.num[ii] << _shift_left) : (numb1.num[ii] >> -_shift_left);
+						_temp_num.num[_index] = _temp_num.num[_index] & 0b0111111111111111111111111111111111111111111111111111111111111111;
+					}
+					var _shift_right;
+					if(_shift >= 0){
+						_shift_right = 63-(_shift mod 63);
+					} else {
+						_shift_right = -(63-((-_shift) mod 63));
+					}
+					var _index = ii + (((_shift >= 0) ? (_shift div 63) : -(-_shift div 63))) + sign(_shift);
+					if(_shift != 0 && _index >= 0){
+						var _temp = (_shift_right >= 0) ? (numb1.num[ii] >> _shift_right) : (numb1.num[ii] << -_shift_right);
+						if(_temp != 0){
+							_temp_num.num[_index] = _temp;
+							_temp_num.num[_index] = _temp_num.num[_index] & 0b0111111111111111111111111111111111111111111111111111111111111111;
+						}
+					}
+					_new_numb = __number_sum__(_new_numb,_temp_num);
+				}
+			}
+		}
+	}
+	for(var i = array_length(_new_numb.num)-1; i >= 2;i--){
+		if(_new_numb.num[i] == 0){
+			array_delete(_new_numb.num,i,1);
+		} else {
+			break;
+		}
+	}
+	return _new_numb;
+}
+
+function __number_reciprocal_fract__(numb){
+	numb = variable_clone(numb);
 	var _new_numb = number(0);
 	
 	var _blank = true;
@@ -222,12 +275,13 @@ function __number_reciprocal__(numb){
 	
 	_new_numb.num_sign = numb.num_sign;
 	
-	if(array_length(numb.num) >= 3){
-		return number(0);
+	var _fract_length = array_length(numb.num)-1;
+	for(var i = 0; i < _fract_length-1; i++){
+		array_insert(numb,0,0);
 	}
 	
 	var _break = false;
-	for(var _a = 1; _a >= 0; _a++){
+	for(var _a = _fract_length+1; _a >= 0; _a++){
 		for(var _b = 62; _b >= 0; _b--){
 			if((numb.num[_a] & (int64(1) << _b)) != 0){
 				_break = true;
@@ -242,6 +296,18 @@ function __number_reciprocal__(numb){
 	var _init_value_shift;
 	var _numb_result = number(0);
 	_numb_result.num_sign = 1;
+	_numb_result.num = array_create(array_length(numb),0);
+	
+	if(_a > _fract_length-1){
+		if(_b == 0){
+			_numb_result.num[1] = int64(1);
+			array_delete(_numb_result,0,1);
+		} else {
+			_numb_result.num[0] = int64(1) << (63-_b);
+		}
+	} else {
+		_numb_result.num[array_length(_numb_result)-1] = int64(1) << (63-_b);
+	}
 	
 	if(_a == 1){
 		_init_value_shift = _b+((numb.num[_a] == (int64(1) << _b)) ? 0 : 1);
